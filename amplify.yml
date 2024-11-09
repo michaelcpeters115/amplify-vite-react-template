@@ -1,17 +1,15 @@
-version: 1
-applications:
-  - frontend:
-      phases:
-        preBuild:
-          commands:
-            - npm install  # Use npm install instead of npm ci
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: /dist  # Update this if your build output is different (e.g., /build for Create React App)
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*  # Cache node_modules to speed up builds
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/* 
