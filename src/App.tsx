@@ -1,40 +1,58 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
+import React, { useState } from 'react';
 
-const client = generateClient<Schema>();
+interface ScreenTimeEntry {
+  date: string;
+  hours: number;
+  notes: string;
+}
 
-function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+const App: React.FC = () => {
+  const [entries, setEntries] = useState<ScreenTimeEntry[]>([]);
+  const [date, setDate] = useState('');
+  const [hours, setHours] = useState<number>(0);
+  const [notes, setNotes] = useState('');
 
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
-
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
-  }
+  const addEntry = () => {
+    const newEntry = { date, hours, notes };
+    setEntries([...entries, newEntry]);
+    setDate('');
+    setHours(0);
+    setNotes('');
+  };
 
   return (
-    <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1>Screen Time Tracker</h1>
+      <div>
+        <label>
+          Date:
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        </label>
+        <label>
+          Hours:
+          <input
+            type="number"
+            value={hours}
+            onChange={(e) => setHours(parseFloat(e.target.value))}
+          />
+        </label>
+        <label>
+          Notes:
+          <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
+        </label>
+        <button onClick={addEntry}>Add Entry</button>
+      </div>
+      <h2>Your Screen Time</h2>
       <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
+        {entries.map((entry, index) => (
+          <li key={index}>
+            <strong>Date:</strong> {entry.date} | <strong>Hours:</strong> {entry.hours} |{' '}
+            <strong>Notes:</strong> {entry.notes}
+          </li>
         ))}
       </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
-    </main>
+    </div>
   );
-}
+};
 
 export default App;
